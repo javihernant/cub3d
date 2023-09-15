@@ -41,8 +41,10 @@ clock_t start = 0;
 clock_t end = 0;
 
 int	pressed = 0;
-int	dirx = 0;
-int diry = 0;
+int	stepx = 0;
+int stepy = 0;
+int obs_x = -1;
+int	obs_y = -1;
 
 int	handle_key(int keycode, void *sth)
 {
@@ -50,28 +52,32 @@ int	handle_key(int keycode, void *sth)
 	if (keycode == XK_a)
 	{
 		printf("a\n");
-		dirx = -1;
-		diry = 0;
+		stepx = -1;
+		stepy = 0;
+		pressed = 1;
 	}
 	else if (keycode == XK_w)
 	{
 		printf("w\n");
-		diry = -1;
-		dirx = 0;
+		stepy = -1;
+		stepx = 0;
+		pressed = 1;
 	}
 	else if (keycode == XK_s)
 	{
-		printf("s\n");
-		diry = 1;
-		dirx = 0;
+		stepx = 0;
+		stepy = 1;
+		pressed = 1;
 	}
 	else if (keycode == XK_d)
 	{
 		printf("d\n");
-		dirx = 1;
-		diry = 0;
+		stepx = 1;
+		stepy = 0;
+		pressed = 1;
+
 	}
-	pressed = 1;
+
 	return 0;
 }
 
@@ -110,7 +116,6 @@ void	draw_map(t_mlxconf *conf)
 		y++;
 	}
 
-	ft_update_img(conf);
 
 
 }
@@ -124,8 +129,8 @@ void	mod_pos()
 	double spmov = fps * 15;
 	if (pressed)
 	{
-		double newX = posx + (double) dirx * spmov;
-		double newY = posy + (double) diry * spmov;
+		double newX = posx + (double) stepx * spmov;
+		double newY = posy + (double) stepy * spmov;
 		// printf("%f , %f\n", newX, newY);
 		if (newX >= 0 && newX < MAP_W && newY >= 0 && newY < MAP_H)
 		{
@@ -141,10 +146,36 @@ void	mod_pos()
 	// printf("%f\n", spmov);
 }
 
+void	print_rays(t_mlxconf *conf)
+{
+
+	int	x = 0;
+	int pixx0 = posx * (double)WIDTH/MAP_W;
+	int pixy0 = posy * (double)HEIGHT/MAP_H;
+	while (x < WIDTH)
+	{
+		double camx = 2 * (double) x / WIDTH - 1;
+		double ray = camx * 0.10;
+		int pixx1 = (posx + MAP_W * ray) * WIDTH / MAP_W;
+		if (pixx1 < 0)
+			pixx1 = 0;
+		if (pixx1 > WIDTH)
+			pixx1 = WIDTH - 1;
+		int pixy1 = 0;
+		ft_draw_line(pixx0, pixy0, pixx1, pixy1, 0x00ff00, conf);
+
+		x++;
+	}
+}
+
 int game_loop(t_mlxconf *conf)
 {
 	draw_map(conf);
 	mod_pos();
+
+	print_rays(conf);
+	ft_update_img(conf);
+
 	return 1;
 }
 

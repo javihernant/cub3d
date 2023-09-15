@@ -24,7 +24,7 @@ void	ft_set_bg(t_mlxconf *conf);
 void	ft_update_img(t_mlxconf *conf);
 void	ft_pixel_put(int x, int y, int color, t_mlxconf *conf);
 void	ft_update_img(t_mlxconf *conf);
-
+void	ft_draw_line(int x1, int y1, int x2, int y2, int color, t_mlxconf *conf);
 
 
 #endif

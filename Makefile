@@ -4,7 +4,7 @@ CFLAGS=-Wall -Wextra -Werror
 IFLAGS=-I. -I./include -I./minilibx-linux
 LFLAGS=-Lminilibx-linux -L/usr/lib
 TESTS=
-SRC=src/main.c src/libft/errors.c src/mlxutils/utils1.c
+SRC=src/main.c src/libft/errors.c src/mlxutils/utils1.c src/mlxutils/draw_line.c
 OBJ=$(SRC:.c=.o)
 COMPILED_OBJS=$(shell find . -name '*.o')
 DBG=-g
