@@ -1,6 +1,7 @@
 #include "mlxutils.h"
 #include "libft.h"
 #include <time.h>
+#include <math.h>
 
 #define MAP_W 24
 #define MAP_H 24
@@ -41,10 +42,12 @@ clock_t start = 0;
 clock_t end = 0;
 
 int	pressed = 0;
-int	stepx = 0;
-int stepy = 0;
-int obs_x = -1;
-int	obs_y = -1;
+double	stepx = 0;
+double stepy = 0;
+double planex = 0;
+double planey = 1;
+double dirx = -1;
+double diry = 0;
 
 int	handle_key(int keycode, void *sth)
 {
@@ -52,31 +55,44 @@ int	handle_key(int keycode, void *sth)
 	if (keycode == XK_a)
 	{
 		printf("a\n");
-		stepx = -1;
-		stepy = 0;
+		stepx = dirx * cos(-1.5707) - diry * sin(-1.5707);
+		stepy = dirx * sin(-1.5707) + diry * cos(-1.5707);
+
 		pressed = 1;
 	}
 	else if (keycode == XK_w)
 	{
 		printf("w\n");
-		stepy = -1;
-		stepx = 0;
+		stepx = dirx;
+		stepy = diry;
+		// stepx = 0;
 		pressed = 1;
 	}
 	else if (keycode == XK_s)
 	{
-		stepx = 0;
-		stepy = 1;
+		stepx = -dirx;
+		stepy = -diry;
 		pressed = 1;
 	}
 	else if (keycode == XK_d)
 	{
 		printf("d\n");
-		stepx = 1;
-		stepy = 0;
+		stepx = dirx * cos(1.5707) - diry * sin(1.5707);
+		stepy = dirx * sin(1.5707) + diry * cos(1.5707);
 		pressed = 1;
 
 	}
+	else if (keycode == XK_Left)
+	{
+		printf("<\n");
+		pressed = 2;
+	}
+	else if (keycode == XK_Right)
+	{
+		printf(">\n");
+		pressed = 3;
+	}
+
 
 	return 0;
 }
@@ -115,9 +131,6 @@ void	draw_map(t_mlxconf *conf)
 		}
 		y++;
 	}
-
-
-
 }
 
 void	mod_pos()
@@ -127,10 +140,10 @@ void	mod_pos()
 	double fps = (double) (end - start) / CLOCKS_PER_SEC;
 
 	double spmov = fps * 15;
-	if (pressed)
+	if (pressed == 1)
 	{
-		double newX = posx + (double) stepx * spmov;
-		double newY = posy + (double) stepy * spmov;
+		double newX = posx + stepx * spmov;
+		double newY = posy + stepy * spmov;
 		// printf("%f , %f\n", newX, newY);
 		if (newX >= 0 && newX < MAP_W && newY >= 0 && newY < MAP_H)
 		{
@@ -141,6 +154,30 @@ void	mod_pos()
 				posy = newY;
 			}
 		}
+		pressed = 0;
+	}
+	double rotspeed = fps * 30;
+	if (pressed == 2)
+	{
+		rotspeed = -rotspeed;
+		double olddirx = dirx;
+		dirx = dirx * cos(rotspeed) - diry * sin(rotspeed);
+		diry = olddirx * sin(rotspeed) + diry * cos(rotspeed);
+
+		double oldplanex = planex;
+     	planex = planex * cos(rotspeed) - planey * sin(rotspeed);
+      	planey = oldplanex * sin(rotspeed) + planey * cos(rotspeed);
+		pressed = 0;
+	}
+	if (pressed == 3)
+	{
+		double olddirx = dirx;
+		dirx = dirx * cos(rotspeed) - diry * sin(rotspeed);
+		diry = olddirx * sin(rotspeed) + diry * cos(rotspeed);
+
+		double oldplanex = planex;
+     	planex = planex * cos(rotspeed) - planey * sin(rotspeed);
+      	planey = oldplanex * sin(rotspeed) + planey * cos(rotspeed);
 		pressed = 0;
 	}
 	// printf("%f\n", spmov);
@@ -155,13 +192,20 @@ void	print_rays(t_mlxconf *conf)
 	while (x < WIDTH)
 	{
 		double camx = 2 * (double) x / WIDTH - 1;
-		double ray = camx * 0.10;
-		int pixx1 = (posx + MAP_W * ray) * WIDTH / MAP_W;
+		double ray = camx * 0.33;
+
+
+		int pixx1 = (posx + dirx + ray*planex) * WIDTH / MAP_W;
 		if (pixx1 < 0)
 			pixx1 = 0;
 		if (pixx1 > WIDTH)
 			pixx1 = WIDTH - 1;
-		int pixy1 = 0;
+		int pixy1 = (posy + diry + ray*planey) * HEIGHT / MAP_H;
+		// int pixy1 = 0;
+		if (pixy1 < 0)
+			pixy1 = 0;
+		if (pixy1 > HEIGHT)
+			pixy1 = HEIGHT - 1;
 		ft_draw_line(pixx0, pixy0, pixx1, pixy1, 0x00ff00, conf);
 
 		x++;
