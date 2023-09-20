@@ -35,8 +35,8 @@ int worldMap[MAP_H][MAP_W]=
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 };
 
-double posx = 5;
-double posy = 5;
+double posx = 5.5;
+double posy = 5.5;
 
 clock_t start = 0;
 clock_t end = 0;
@@ -44,10 +44,10 @@ clock_t end = 0;
 int	pressed = 0;
 double	stepx = 0;
 double stepy = 0;
-double planex = 0;
-double planey = 1;
-double dirx = -1;
-double diry = 0;
+double planex = -1;
+double planey = 0;
+double dirx = 0;
+double diry = -1;
 
 int	handle_key(int keycode, void *sth)
 {
@@ -156,7 +156,7 @@ void	mod_pos()
 		}
 		pressed = 0;
 	}
-	double rotspeed = fps * 30;
+	double rotspeed = fps * 5;
 	if (pressed == 2)
 	{
 		rotspeed = -rotspeed;
@@ -187,24 +187,95 @@ void	print_rays(t_mlxconf *conf)
 {
 
 	int	x = 0;
-	int pixx0 = posx * (double)WIDTH/MAP_W;
-	int pixy0 = posy * (double)HEIGHT/MAP_H;
+	int pixx0 = posx * (double)WIDTH/ MAP_W;
+	int pixy0 = posy * (double)HEIGHT/ MAP_H;
+	// if (1)
+	// if (1)
 	while (x < WIDTH)
 	{
 		double camx = 2 * (double) x / WIDTH - 1;
-		double ray = camx * 0.33;
+		double ray = camx * 1;
+
+		double ratiox =  (dirx + ray*planex) == 0 ? 999999 : 1/fabs(dirx + ray*planex); //TODO: if div is 0
+		double ratioy = (diry + ray*planey) == 0 ? 999999 : 1/fabs(diry + ray*planey);
+		double distx;
+		double disty;
+		// double obsx = posx + dirx;
+		// double obsy = posy + diry;
+		double sx;
+		double	sy;
+		if (dirx + ray*planex < 0)
+		{
+			distx = (posx - floor(posx)) * ratiox;
+			sx = -1;
+		}
+		else
+		{
+			distx = (ceil(posx) - posx) * ratiox;
+			sx = 1;
+		}
+		if (diry + ray*planey < 0)
+		{
+			disty = (posy - floor(posy)) * ratioy;
+			sy = -1;
+		}
+		else
+		{
+			disty = (ceil(posy) - posy) * ratioy;
+			sy = 1;
+		}
+		int hit = 0;
+		int side;
+		double obsx = (int) posx;
+		double obsy = (int) posy;
+		// double raydirx = dirx + planex*ray;
+		// double raydiry = diry + planey*ray;
+		while(!hit)
+		{
+			if (distx < disty)
+			{
+				obsx += sx;
+				distx += ratiox;
+				side = 0;
+			}
+			else
+			{
+				obsy += sy;
+				disty += ratioy;
+				side = 1;
+			}
+			if (worldMap[(int)obsy][(int)obsx] != 0)
+			{
+				if (side == 0)
+				{
+					obsx = posx + (dirx + planex*ray) * (distx - ratiox);
+					obsy = posy + (diry + planey*ray) * (distx - ratiox);
+				}
+				else
+				{
+					obsx = posx + (dirx + planex*ray) * (disty - ratioy);
+					obsy = posy + (diry + planey*ray) * (disty - ratioy);
+
+				}
+				break;
+			}
+
+			(void) side;
+
+		}
 
 
-		int pixx1 = (posx + dirx + ray*planex) * WIDTH / MAP_W;
+		int pixx1 = obsx * (double) WIDTH / (double) MAP_W;
+		int pixy1 = obsy * (double) HEIGHT / (double) MAP_H;
+
 		if (pixx1 < 0)
 			pixx1 = 0;
-		if (pixx1 > WIDTH)
+		if (pixx1 >= WIDTH)
 			pixx1 = WIDTH - 1;
-		int pixy1 = (posy + diry + ray*planey) * HEIGHT / MAP_H;
 		// int pixy1 = 0;
 		if (pixy1 < 0)
 			pixy1 = 0;
-		if (pixy1 > HEIGHT)
+		if (pixy1 >= HEIGHT)
 			pixy1 = HEIGHT - 1;
 		ft_draw_line(pixx0, pixy0, pixx1, pixy1, 0x00ff00, conf);
 
