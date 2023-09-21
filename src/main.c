@@ -3,8 +3,7 @@
 #include <time.h>
 #include <math.h>
 
-#define MAP_W 24
-#define MAP_H 24
+
 
 
 int worldMap[MAP_H][MAP_W]=
@@ -48,54 +47,87 @@ double planex = -1;
 double planey = 0;
 double dirx = 0;
 double diry = -1;
+t_keys keys;
 
-int	handle_key(int keycode, void *sth)
+int	key_press(int keycode, t_keys *keys)
 {
-	(void) sth;
 	if (keycode == XK_a)
-	{
-		printf("a\n");
-		stepx = dirx * cos(-1.5707) - diry * sin(-1.5707);
-		stepy = dirx * sin(-1.5707) + diry * cos(-1.5707);
-
-		pressed = 1;
-	}
+		keys->a = 1;
 	else if (keycode == XK_w)
-	{
-		printf("w\n");
-		stepx = dirx;
-		stepy = diry;
-		// stepx = 0;
-		pressed = 1;
-	}
+		keys->w = 1;
 	else if (keycode == XK_s)
-	{
-		stepx = -dirx;
-		stepy = -diry;
-		pressed = 1;
-	}
+		keys->s = 1;
 	else if (keycode == XK_d)
-	{
-		printf("d\n");
-		stepx = dirx * cos(1.5707) - diry * sin(1.5707);
-		stepy = dirx * sin(1.5707) + diry * cos(1.5707);
-		pressed = 1;
-
-	}
+		keys->d = 1;
 	else if (keycode == XK_Left)
-	{
-		printf("<\n");
-		pressed = 2;
-	}
+		keys->left = 1;
 	else if (keycode == XK_Right)
-	{
-		printf(">\n");
-		pressed = 3;
-	}
-
-
+		keys->right = 1;
 	return 0;
 }
+
+int	key_release(int keycode, t_keys *keys)
+{
+	if (keycode == XK_a)
+		keys->a = 0;
+	else if (keycode == XK_w)
+		keys->w = 0;
+	else if (keycode == XK_s)
+		keys->s = 0;
+	else if (keycode == XK_d)
+		keys->d = 0;
+	else if (keycode == XK_Left)
+		keys->left = 0;
+	else if (keycode == XK_Right)
+		keys->right = 0;
+	return 0;
+}
+
+// int	handle_key(int keycode, void *sth)
+// {
+// 	(void) sth;
+// 	if (keycode == XK_a)
+// 	{
+// 		printf("a\n");
+// 		stepx = dirx * cos(-1.5707) - diry * sin(-1.5707);
+// 		stepy = dirx * sin(-1.5707) + diry * cos(-1.5707);
+
+// 		pressed = 1;
+// 	}
+// 	else if (keycode == XK_w)
+// 	{
+// 		printf("w\n");
+// 		stepx = dirx;
+// 		stepy = diry;
+// 		// stepx = 0;
+// 		pressed = 1;
+// 	}
+// 	else if (keycode == XK_s)
+// 	{
+// 		stepx = -dirx;
+// 		stepy = -diry;
+// 		pressed = 1;
+// 	}
+// 	else if (keycode == XK_d)
+// 	{
+// 		printf("d\n");
+// 		stepx = dirx * cos(1.5707) - diry * sin(1.5707);
+// 		stepy = dirx * sin(1.5707) + diry * cos(1.5707);
+// 		pressed = 1;
+
+// 	}
+// 	else if (keycode == XK_Left)
+// 	{
+// 		printf("<\n");
+// 		pressed = 2;
+// 	}
+// 	else if (keycode == XK_Right)
+// 	{
+// 		printf(">\n");
+// 		pressed = 3;
+// 	}
+// 	return 0;
+// }
 
 void	draw_map(t_mlxconf *conf)
 {
@@ -133,54 +165,124 @@ void	draw_map(t_mlxconf *conf)
 	}
 }
 
-void	mod_pos()
+// void	mod_pos()
+// {
+// 	start = end;
+// 	end = clock();
+// 	double fps = (double) (end - start) / CLOCKS_PER_SEC;
+
+// 	double spmov = fps * 15;
+// 	if (pressed == 1)
+// 	{
+// 		double newX = posx + stepx * spmov;
+// 		double newY = posy + stepy * spmov;
+// 		// printf("%f , %f\n", newX, newY);
+// 		if (newX >= 0 && newX < MAP_W && newY >= 0 && newY < MAP_H)
+// 		{
+
+// 			if (worldMap[(int)newY][(int)newX] == 0)
+// 			{
+// 				posx = newX;
+// 				posy = newY;
+// 			}
+// 		}
+// 		pressed = 0;
+// 	}
+// 	double rotspeed = fps * 5;
+// 	if (pressed == 2)
+// 	{
+// 		rotspeed = -rotspeed;
+// 		double olddirx = dirx;
+// 		dirx = dirx * cos(rotspeed) - diry * sin(rotspeed);
+// 		diry = olddirx * sin(rotspeed) + diry * cos(rotspeed);
+
+// 		double oldplanex = planex;
+//      	planex = planex * cos(rotspeed) - planey * sin(rotspeed);
+//       	planey = oldplanex * sin(rotspeed) + planey * cos(rotspeed);
+// 		pressed = 0;
+// 	}
+// 	if (pressed == 3)
+// 	{
+// 		double olddirx = dirx;
+// 		dirx = dirx * cos(rotspeed) - diry * sin(rotspeed);
+// 		diry = olddirx * sin(rotspeed) + diry * cos(rotspeed);
+
+// 		double oldplanex = planex;
+//      	planex = planex * cos(rotspeed) - planey * sin(rotspeed);
+//       	planey = oldplanex * sin(rotspeed) + planey * cos(rotspeed);
+// 		pressed = 0;
+// 	}
+// 	// printf("%f\n", spmov);
+// }
+
+void rotate_dir(double rotspeed)
+{
+	double olddirx = dirx;
+	dirx = dirx * cos(rotspeed) - diry * sin(rotspeed);
+	diry = olddirx * sin(rotspeed) + diry * cos(rotspeed);
+
+	double oldplanex = planex;
+	planex = planex * cos(rotspeed) - planey * sin(rotspeed);
+	planey = oldplanex * sin(rotspeed) + planey * cos(rotspeed);
+}
+
+void	mod_pos(t_keys *keys)
 {
 	start = end;
 	end = clock();
 	double fps = (double) (end - start) / CLOCKS_PER_SEC;
 
 	double spmov = fps * 15;
-	if (pressed == 1)
-	{
-		double newX = posx + stepx * spmov;
-		double newY = posy + stepy * spmov;
-		// printf("%f , %f\n", newX, newY);
-		if (newX >= 0 && newX < MAP_W && newY >= 0 && newY < MAP_H)
-		{
 
-			if (worldMap[(int)newY][(int)newX] == 0)
-			{
-				posx = newX;
-				posy = newY;
-			}
-		}
-		pressed = 0;
+	double stepx;
+	double stepy;
+
+	if (keys->w)
+	{
+		stepx = dirx;
+		stepy = diry;
 	}
+	if (keys->s)
+	{
+		stepx = -dirx;
+		stepy = -diry;
+	}
+	if (keys->a)
+	{
+		stepx = dirx * cos(-1.5707) - diry * sin(-1.5707);
+		stepy = dirx * sin(-1.5707) + diry * cos(-1.5707);
+
+	}
+	if (keys->d)
+	{
+		stepx = dirx * cos(1.5707) - diry * sin(1.5707);
+		stepy = dirx * sin(1.5707) + diry * cos(1.5707);
+	}
+	double newx = posx + stepx * spmov;
+	double newy = posy + stepy * spmov;
+	if (newx >= 0 && newx < MAP_W && newy >= 0 && newy < MAP_H)
+	{
+
+		if (worldMap[(int)newy][(int)newx] == 0)
+		{
+			posx = newx;
+			posy = newy;
+		}
+	}
+
+	//Rotations
 	double rotspeed = fps * 5;
-	if (pressed == 2)
+	if (keys->left)
 	{
 		rotspeed = -rotspeed;
-		double olddirx = dirx;
-		dirx = dirx * cos(rotspeed) - diry * sin(rotspeed);
-		diry = olddirx * sin(rotspeed) + diry * cos(rotspeed);
+		rotate_dir(rotspeed);
 
-		double oldplanex = planex;
-     	planex = planex * cos(rotspeed) - planey * sin(rotspeed);
-      	planey = oldplanex * sin(rotspeed) + planey * cos(rotspeed);
-		pressed = 0;
 	}
-	if (pressed == 3)
+	if (keys->right)
 	{
-		double olddirx = dirx;
-		dirx = dirx * cos(rotspeed) - diry * sin(rotspeed);
-		diry = olddirx * sin(rotspeed) + diry * cos(rotspeed);
-
-		double oldplanex = planex;
-     	planex = planex * cos(rotspeed) - planey * sin(rotspeed);
-      	planey = oldplanex * sin(rotspeed) + planey * cos(rotspeed);
-		pressed = 0;
+		rotate_dir(rotspeed);
 	}
-	// printf("%f\n", spmov);
+
 }
 
 void	print_rays(t_mlxconf *conf)
@@ -286,7 +388,7 @@ void	print_rays(t_mlxconf *conf)
 int game_loop(t_mlxconf *conf)
 {
 	draw_map(conf);
-	mod_pos();
+	mod_pos(&keys);
 
 	print_rays(conf);
 	ft_update_img(conf);
@@ -298,11 +400,13 @@ int main(void)
 {
 	t_mlxconf	conf;
 
+	init_keys(&keys);
 	if (ft_mlx_init(&conf, "Cub3D 42") != 0)
 		ft_error("Error initializing mlx");
 	// ft_set_bg(&conf);
 	// ft_update_img(&conf);
-	mlx_hook(conf.win, KeyPress, KeyPressMask, handle_key, 0);
+	mlx_hook(conf.win, KeyPress, KeyPressMask, key_press, &keys);
+	mlx_hook(conf.win, KeyRelease, KeyReleaseMask, key_release, &keys);
 	// mlx_key_hook(conf.win, handle_key, 0);
 	mlx_loop_hook(conf.mlx, game_loop, &conf);
 	mlx_loop(conf.mlx);

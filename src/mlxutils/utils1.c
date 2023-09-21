@@ -1,4 +1,5 @@
 #include "mlxutils.h"
+#include <stdlib.h>
 
 void	init_mlxconf(t_mlxconf *conf)
 {
@@ -6,6 +7,16 @@ void	init_mlxconf(t_mlxconf *conf)
 	conf->img = 0;
 	conf->mlx = 0;
 	conf->win = 0;
+}
+
+void	init_keys(t_keys *keys)
+{
+	keys->w = 0;
+	keys->a = 0;
+	keys->s = 0;
+	keys->d = 0;
+	keys->left = 0;
+	keys->right = 0;
 }
 
 int	ft_mlx_init(t_mlxconf *conf, char *title)
@@ -76,6 +87,17 @@ void	ft_set_bg(t_mlxconf *conf)
 
 void	ft_update_img(t_mlxconf *conf)
 {
+	// int y = 0;
+	// while (y < HEIGHT)
+	// {
+	// 	int x = 0;
+	// 	while (x < WIDTH)
+	// 	{
+	// 		((conf->imgbuff))[y * conf->line_length + x * (conf->bpp / 8)] = ((conf->buff))[y * conf->line_length + x * (conf->bpp / 8)];
+	// 		x++;
+	// 	}
+	// 	y++;
+	// }
 	mlx_put_image_to_window(conf->mlx, conf->win,
 		conf->img, 0, 0);
 }
