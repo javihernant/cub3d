@@ -43,13 +43,14 @@ clock_t end = 0;
 int	pressed = 0;
 double	stepx = 0;
 double stepy = 0;
-double planex = -1;
+double planex = 1;
 double planey = 0;
 double dirx = 0;
 double diry = -1;
 t_keys keys;
 double obsdist[WIDTH];
 double rays[WIDTH];
+char	side[WIDTH];
 
 int	key_press(int keycode, t_keys *keys)
 {
@@ -234,7 +235,7 @@ void	mod_pos(t_keys *keys)
 	end = clock();
 	double fps = (double) (end - start) / CLOCKS_PER_SEC;
 
-	double spmov = fps * 15;
+	double spmov = fps * 3;
 
 	double stepx;
 	double stepy;
@@ -390,8 +391,6 @@ void	obstacle_dist()
 	int	x = 0;
 	while (x < WIDTH)
 	{
-
-
 		double ratiox =  (dirx + rays[x]*planex) == 0 ? 999999 : 1/fabs(dirx + rays[x]*planex); //TODO: if div is 0
 		double ratioy = (diry + rays[x]*planey) == 0 ? 999999 : 1/fabs(diry + rays[x]*planey);
 		double distx;
@@ -421,7 +420,6 @@ void	obstacle_dist()
 			sy = 1;
 		}
 		int hit = 0;
-		int side;
 		double obsx = (int) posx;
 		double obsy = (int) posy;
 		// double raydirx = dirx + planex*ray;
@@ -432,17 +430,17 @@ void	obstacle_dist()
 			{
 				obsx += sx;
 				distx += ratiox;
-				side = 0;
+				side[x] = 0;
 			}
 			else
 			{
 				obsy += sy;
 				disty += ratioy;
-				side = 1;
+				side[x] = 1;
 			}
 			if (worldMap[(int)obsy][(int)obsx] != 0)
 			{
-				if (side == 0)
+				if (side[x] == 0)
 				{
 					obsdist[x] = distx - ratiox;
 
@@ -476,11 +474,32 @@ void draw_rays(t_mlxconf *conf)
 		}
 }
 
+void	draw_3d(t_mlxconf *conf)
+{
+	int	x = 0;
+	double line_height;
+	while (x < WIDTH)
+	{
+		line_height = HEIGHT/obsdist[x];
+		int start = HEIGHT/2 -line_height/2;
+		int end = HEIGHT/2 + line_height/2;
+		int color = 0x00ff00;
+		if (side[x] == 0)
+		{
+			color = (color & 0xf0f0f0f0) >> 1;
+		}
+		ft_draw_line(x, start, x, end, color, conf);
+		x++;
+	}
+}
+
 int game_loop(t_mlxconf *conf)
 {
-	draw_map(conf);
+	// draw_map(conf);
 	obstacle_dist();
-	draw_rays(conf);
+	// draw_rays(conf);
+	ft_set_bg(conf);
+	draw_3d(conf);
 	ft_update_img(conf);
 	mod_pos(&keys);
 
