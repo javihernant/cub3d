@@ -48,6 +48,8 @@ double planey = 0;
 double dirx = 0;
 double diry = -1;
 t_keys keys;
+double obsdist[WIDTH];
+double rays[WIDTH];
 
 int	key_press(int keycode, t_keys *keys)
 {
@@ -285,28 +287,120 @@ void	mod_pos(t_keys *keys)
 
 }
 
-void	print_rays(t_mlxconf *conf)
+// void	print_rays(t_mlxconf *conf)
+// {
+
+// 	int	x = 0;
+// 	int pixx0 = posx * (double)WIDTH/ MAP_W;
+// 	int pixy0 = posy * (double)HEIGHT/ MAP_H;
+// 	// if (1)
+// 	// if (1)
+// 	while (x < WIDTH)
+// 	{
+// 		double camx = 2 * (double) x / WIDTH - 1;
+// 		double ray = camx * 1;
+
+// 		double ratiox =  (dirx + ray*planex) == 0 ? 999999 : 1/fabs(dirx + ray*planex); //TODO: if div is 0
+// 		double ratioy = (diry + ray*planey) == 0 ? 999999 : 1/fabs(diry + ray*planey);
+// 		double distx;
+// 		double disty;
+// 		// double obsx = posx + dirx;
+// 		// double obsy = posy + diry;
+// 		double sx;
+// 		double	sy;
+// 		if (dirx + ray*planex < 0)
+// 		{
+// 			distx = (posx - floor(posx)) * ratiox;
+// 			sx = -1;
+// 		}
+// 		else
+// 		{
+// 			distx = (ceil(posx) - posx) * ratiox;
+// 			sx = 1;
+// 		}
+// 		if (diry + ray*planey < 0)
+// 		{
+// 			disty = (posy - floor(posy)) * ratioy;
+// 			sy = -1;
+// 		}
+// 		else
+// 		{
+// 			disty = (ceil(posy) - posy) * ratioy;
+// 			sy = 1;
+// 		}
+// 		int hit = 0;
+// 		int side;
+// 		double obsx = (int) posx;
+// 		double obsy = (int) posy;
+// 		// double raydirx = dirx + planex*ray;
+// 		// double raydiry = diry + planey*ray;
+// 		while(!hit)
+// 		{
+// 			if (distx < disty)
+// 			{
+// 				obsx += sx;
+// 				distx += ratiox;
+// 				side = 0;
+// 			}
+// 			else
+// 			{
+// 				obsy += sy;
+// 				disty += ratioy;
+// 				side = 1;
+// 			}
+// 			if (worldMap[(int)obsy][(int)obsx] != 0)
+// 			{
+// 				if (side == 0)
+// 				{
+// 					obsx = posx + (dirx + planex*ray) * (distx - ratiox);
+// 					obsy = posy + (diry + planey*ray) * (distx - ratiox);
+// 				}
+// 				else
+// 				{
+// 					obsx = posx + (dirx + planex*ray) * (disty - ratioy);
+// 					obsy = posy + (diry + planey*ray) * (disty - ratioy);
+
+// 				}
+// 				break;
+// 			}
+// 		}
+
+
+// 		int pixx1 = obsx * (double) WIDTH / (double) MAP_W;
+// 		int pixy1 = obsy * (double) HEIGHT / (double) MAP_H;
+
+// 		if (pixx1 < 0)
+// 			pixx1 = 0;
+// 		if (pixx1 >= WIDTH)
+// 			pixx1 = WIDTH - 1;
+// 		// int pixy1 = 0;
+// 		if (pixy1 < 0)
+// 			pixy1 = 0;
+// 		if (pixy1 >= HEIGHT)
+// 			pixy1 = HEIGHT - 1;
+// 		ft_draw_line(pixx0, pixy0, pixx1, pixy1, 0x00ff00, conf);
+
+// 		x++;
+// 	}
+// }
+
+void	obstacle_dist()
 {
 
 	int	x = 0;
-	int pixx0 = posx * (double)WIDTH/ MAP_W;
-	int pixy0 = posy * (double)HEIGHT/ MAP_H;
-	// if (1)
-	// if (1)
 	while (x < WIDTH)
 	{
-		double camx = 2 * (double) x / WIDTH - 1;
-		double ray = camx * 1;
 
-		double ratiox =  (dirx + ray*planex) == 0 ? 999999 : 1/fabs(dirx + ray*planex); //TODO: if div is 0
-		double ratioy = (diry + ray*planey) == 0 ? 999999 : 1/fabs(diry + ray*planey);
+
+		double ratiox =  (dirx + rays[x]*planex) == 0 ? 999999 : 1/fabs(dirx + rays[x]*planex); //TODO: if div is 0
+		double ratioy = (diry + rays[x]*planey) == 0 ? 999999 : 1/fabs(diry + rays[x]*planey);
 		double distx;
 		double disty;
 		// double obsx = posx + dirx;
 		// double obsy = posy + diry;
 		double sx;
 		double	sy;
-		if (dirx + ray*planex < 0)
+		if (dirx + rays[x]*planex < 0)
 		{
 			distx = (posx - floor(posx)) * ratiox;
 			sx = -1;
@@ -316,7 +410,7 @@ void	print_rays(t_mlxconf *conf)
 			distx = (ceil(posx) - posx) * ratiox;
 			sx = 1;
 		}
-		if (diry + ray*planey < 0)
+		if (diry + rays[x]*planey < 0)
 		{
 			disty = (posy - floor(posy)) * ratioy;
 			sy = -1;
@@ -350,50 +444,60 @@ void	print_rays(t_mlxconf *conf)
 			{
 				if (side == 0)
 				{
-					obsx = posx + (dirx + planex*ray) * (distx - ratiox);
-					obsy = posy + (diry + planey*ray) * (distx - ratiox);
+					obsdist[x] = distx - ratiox;
+
 				}
 				else
 				{
-					obsx = posx + (dirx + planex*ray) * (disty - ratioy);
-					obsy = posy + (diry + planey*ray) * (disty - ratioy);
+					obsdist[x] = disty - ratioy;
 
 				}
 				break;
 			}
-
-			(void) side;
-
 		}
-
-
-		int pixx1 = obsx * (double) WIDTH / (double) MAP_W;
-		int pixy1 = obsy * (double) HEIGHT / (double) MAP_H;
-
-		if (pixx1 < 0)
-			pixx1 = 0;
-		if (pixx1 >= WIDTH)
-			pixx1 = WIDTH - 1;
-		// int pixy1 = 0;
-		if (pixy1 < 0)
-			pixy1 = 0;
-		if (pixy1 >= HEIGHT)
-			pixy1 = HEIGHT - 1;
-		ft_draw_line(pixx0, pixy0, pixx1, pixy1, 0x00ff00, conf);
 
 		x++;
 	}
 }
 
+void draw_rays(t_mlxconf *conf)
+{
+		int pixx0 = posx * (double)WIDTH/ MAP_W;
+		int pixy0 = posy * (double)HEIGHT/ MAP_H;
+		int	x = 0;
+		while (x < WIDTH)
+		{
+			double obsx = posx + (dirx + planex*rays[x]) * obsdist[x];
+			double obsy = posy + (diry + planey*rays[x]) * obsdist[x];
+			int pixx1 = obsx * (double) WIDTH / (double) MAP_W;
+			int pixy1 = obsy * (double) HEIGHT / (double) MAP_H;
+			ft_draw_line(pixx0, pixy0, pixx1, pixy1, 0x00ff00, conf);
+			x++;
+		}
+}
+
 int game_loop(t_mlxconf *conf)
 {
 	draw_map(conf);
+	obstacle_dist();
+	draw_rays(conf);
+	ft_update_img(conf);
 	mod_pos(&keys);
 
-	print_rays(conf);
-	ft_update_img(conf);
 
 	return 1;
+}
+
+void ray_constants()
+{
+	int	x = 0;
+	while (x < WIDTH)
+	{
+		double camx = 2 * (double) x / WIDTH - 1;
+		double ray = camx * 1;
+		rays[x] = ray;
+		x++;
+	}
 }
 
 int main(void)
@@ -405,6 +509,7 @@ int main(void)
 		ft_error("Error initializing mlx");
 	// ft_set_bg(&conf);
 	// ft_update_img(&conf);
+	ray_constants();
 	mlx_hook(conf.win, KeyPress, KeyPressMask, key_press, &keys);
 	mlx_hook(conf.win, KeyRelease, KeyReleaseMask, key_release, &keys);
 	// mlx_key_hook(conf.win, handle_key, 0);
