@@ -88,17 +88,17 @@ int	key_release(int keycode, t_keys *keys)
 
 void	draw_map(t_mlxconf *conf)
 {
-	int pixx = posx * WIDTH / MAP_W;
-	int pixy = posy * HEIGHT / MAP_H;
+	int pixx = posx * (double)MINIM_W / MAP_W;
+	int pixy = posy * (double)MINIM_H / MAP_H;
 
 	int y = 0;
-	while (y < HEIGHT)
+	while (y < MINIM_H)
 	{
 		int x = 0;
-		while (x < WIDTH)
+		while (x < MINIM_W)
 		{
-			int i = y * MAP_H / HEIGHT;
-			int j = x * MAP_W / WIDTH;
+			int i = y * MAP_H / MINIM_H;
+			int j = x * MAP_W / MINIM_W;
 			int val = worldMap[i][j];
 			int color;
 			if (val == 0)
@@ -115,7 +115,7 @@ void	draw_map(t_mlxconf *conf)
 			{
 				color = 0xff00ff;
 			}
-			ft_pixel_put(x,y,color,conf);
+			ft_pixel_put(x,y,color,&conf->map);
 			x++;
 		}
 		y++;
@@ -264,16 +264,16 @@ void	obstacle_dist()
 
 void draw_rays(t_mlxconf *conf)
 {
-		int pixx0 = posx * (double)WIDTH/ MAP_W;
-		int pixy0 = posy * (double)HEIGHT/ MAP_H;
+		int pixx0 = posx * (double)MINIM_W/ MAP_W;
+		int pixy0 = posy * (double)MINIM_H/ MAP_H;
 		int	x = 0;
 		while (x < WIDTH)
 		{
 			double obsx = posx + (dirx + planex*rays[x]) * obsdist[x];
 			double obsy = posy + (diry + planey*rays[x]) * obsdist[x];
-			int pixx1 = obsx * (double) WIDTH / (double) MAP_W;
-			int pixy1 = obsy * (double) HEIGHT / (double) MAP_H;
-			ft_draw_line(pixx0, pixy0, pixx1, pixy1, 0x00ff00, conf);
+			int pixx1 = obsx * (double)MINIM_W / MAP_W;
+			int pixy1 = obsy * (double)MINIM_H / MAP_H;
+			ft_draw_line(pixx0, pixy0, pixx1, pixy1, 0x00ff00, &conf->map);
 			x++;
 		}
 }
@@ -292,16 +292,16 @@ void	draw_3d(t_mlxconf *conf)
 		{
 			color = (color & 0xf0f0f0f0) >> 1;
 		}
-		ft_draw_line(x, start, x, end, color, conf);
+		ft_draw_line(x, start, x, end, color, &conf->world);
 		x++;
 	}
 }
 
 int game_loop(t_mlxconf *conf)
 {
-	// draw_map(conf);
+	draw_map(conf);
 	obstacle_dist();
-	// draw_rays(conf);
+	draw_rays(conf);
 	ft_set_bg(conf);
 	draw_3d(conf);
 	ft_update_img(conf);

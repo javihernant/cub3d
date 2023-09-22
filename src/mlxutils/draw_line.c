@@ -1,7 +1,7 @@
 #include "libft.h"
 #include "mlxutils.h"
 
-void	ft_draw_line_low(int x1, int y1, int x2, int y2, int color, t_mlxconf *conf)
+void	ft_draw_line_low(int x1, int y1, int x2, int y2, int color, t_mlximg *mlximg)
 {
 	int		d;
 
@@ -18,7 +18,7 @@ void	ft_draw_line_low(int x1, int y1, int x2, int y2, int color, t_mlxconf *conf
 	int tmpx1 = x1;
 	while (tmpx1 <= x2)
 	{
-		ft_pixel_put(tmpx1, tmpy1, color, conf);
+		ft_pixel_put(tmpx1, tmpy1, color, mlximg);
 		if (d > 0)
 		{
 			tmpy1 += yi;
@@ -30,7 +30,7 @@ void	ft_draw_line_low(int x1, int y1, int x2, int y2, int color, t_mlxconf *conf
 	}
 }
 
-void	ft_draw_line_high(int x1, int y1, int x2, int y2, int color, t_mlxconf *conf)
+void	ft_draw_line_high(int x1, int y1, int x2, int y2, int color, t_mlximg *mlximg)
 {
 	int		d;
 
@@ -48,7 +48,7 @@ void	ft_draw_line_high(int x1, int y1, int x2, int y2, int color, t_mlxconf *con
 	int tmpx1 = x1;
 	while (tmpy1 <= y2)
 	{
-		ft_pixel_put(tmpx1, tmpy1, color, conf);
+		ft_pixel_put(tmpx1, tmpy1, color, mlximg);
 		if (d > 0)
 		{
 			tmpx1 += xi;
@@ -60,21 +60,21 @@ void	ft_draw_line_high(int x1, int y1, int x2, int y2, int color, t_mlxconf *con
 	}
 }
 
-void ft_draw_line(int x1, int y1, int x2, int y2, int color, t_mlxconf *conf)
+void ft_draw_line(int x1, int y1, int x2, int y2, int color, t_mlximg *mlximg)
 {
 	if (abs(y2 - y1) < abs(x2 - x1))
 	{
 		if (x1 < x2)
-			ft_draw_line_low(x1, y1, x2, y2, color, conf);
+			ft_draw_line_low(x1, y1, x2, y2, color, mlximg);
 		else
-			ft_draw_line_low(x2, y2, x1, y1, color, conf);
+			ft_draw_line_low(x2, y2, x1, y1, color, mlximg);
 	}
 	else
 	{
 		if (y1 < y2)
-			ft_draw_line_high(x1, y1, x2, y2, color, conf);
+			ft_draw_line_high(x1, y1, x2, y2, color, mlximg);
 		else
-			ft_draw_line_high(x2, y2, x1, y1, color, conf);
+			ft_draw_line_high(x2, y2, x1, y1, color, mlximg);
 	}
 }
 

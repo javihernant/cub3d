@@ -1,14 +1,6 @@
 #include "mlxutils.h"
 #include <stdlib.h>
 
-void	init_mlxconf(t_mlxconf *conf)
-{
-	conf->buff = 0;
-	conf->img = 0;
-	conf->mlx = 0;
-	conf->win = 0;
-}
-
 void	init_keys(t_keys *keys)
 {
 	keys->w = 0;
@@ -19,9 +11,22 @@ void	init_keys(t_keys *keys)
 	keys->right = 0;
 }
 
+int	ft_init_img(t_mlximg *mlximg, void *mlx, int w, int h)
+{
+	mlximg->img = mlx_new_image(mlx, w, h);
+	if (!mlximg->img)
+		return (1);
+	mlximg->buff = mlx_get_data_addr(mlximg->img, &mlximg->bpp,
+			&mlximg->line_length, &mlximg->endian);
+	if (!mlximg->buff)
+		return (1);
+	mlximg->w = w;
+	mlximg->h = h;
+	return (0);
+}
+
 int	ft_mlx_init(t_mlxconf *conf, char *title)
 {
-	init_mlxconf(conf);
 	conf->mlx = mlx_init();
 	if (!conf->mlx)
 		return (1);
@@ -29,12 +34,9 @@ int	ft_mlx_init(t_mlxconf *conf, char *title)
 			title);
 	if (!conf->win)
 		return (1);
-	conf->img = mlx_new_image(conf->mlx, WIDTH, HEIGHT);
-	if (!conf->img)
+	if (ft_init_img(&conf->map, conf->mlx, MINIM_W, MINIM_H) != 0)
 		return (1);
-	conf->buff = mlx_get_data_addr(conf->img, &conf->bpp,
-			&conf->line_length, &conf->endian);
-	if (!conf->buff)
+	if (ft_init_img(&conf->world, conf->mlx, WIDTH, HEIGHT) != 0)
 		return (1);
 	return (0);
 }
@@ -57,7 +59,7 @@ void	ft_set_color(char *dst, int color, int endian)
 	}
 }
 
-void	ft_pixel_put(int x, int y, int color, t_mlxconf *conf)
+void	ft_pixel_put(int x, int y, int color, t_mlximg *conf)
 {
 	char	*dst;
 
@@ -78,7 +80,7 @@ void	ft_set_bg(t_mlxconf *conf)
 		j = 0;
 		while (j < WIDTH)
 		{
-			ft_pixel_put(j, i, 0xffffff, conf);
+			ft_pixel_put(j, i, 0xffffff, &conf->world);
 			j++;
 		}
 		i++;
@@ -99,5 +101,8 @@ void	ft_update_img(t_mlxconf *conf)
 	// 	y++;
 	// }
 	mlx_put_image_to_window(conf->mlx, conf->win,
-		conf->img, 0, 0);
+		conf->world.img, 0, 0);
+	mlx_put_image_to_window(conf->mlx, conf->win,
+		conf->map.img, 0, 0);
+
 }

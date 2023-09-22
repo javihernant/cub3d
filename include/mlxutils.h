@@ -3,8 +3,8 @@
 
 # define WIDTH 640
 # define HEIGHT 480
-#define MINIM_W  WIDTH / 5;
-#define MINIM_H  HEIGHT / 5;
+#define MINIM_W  (WIDTH / 5)
+#define MINIM_H  (HEIGHT / 5)
 #define MAP_W 24
 #define MAP_H 24
 
@@ -13,16 +13,24 @@
 # include <X11/X.h>
 # include <X11/keysym.h>
 
-
-typedef struct s_mlxconf {
-	void	*mlx;
-	void	*win;
+typedef struct s_mlximg {
 	void	*img;
 	char	*buff;
+	int		w;
+	int		h;
 	int		bpp;
 	int		line_length;
 	int		endian;
+}	t_mlximg;
+
+typedef struct s_mlxconf {
+	void		*mlx;
+	void		*win;
+	t_mlximg	map;
+	t_mlximg	world;
 }	t_mlxconf;
+
+
 
 typedef struct s_keys {
 	char	w;
@@ -36,9 +44,9 @@ typedef struct s_keys {
 int	ft_mlx_init(t_mlxconf *mlx, char *title);
 void	ft_set_bg(t_mlxconf *conf);
 void	ft_update_img(t_mlxconf *conf);
-void	ft_pixel_put(int x, int y, int color, t_mlxconf *conf);
+void	ft_pixel_put(int x, int y, int color, t_mlximg *conf);
 void	ft_update_img(t_mlxconf *conf);
-void	ft_draw_line(int x1, int y1, int x2, int y2, int color, t_mlxconf *conf);
+void ft_draw_line(int x1, int y1, int x2, int y2, int color, t_mlximg *mlximg);
 void	init_keys(t_keys *keys);
 
 
