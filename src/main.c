@@ -1,56 +1,5 @@
 #include "mlxutils.h"
 #include "libft.h"
-#include <time.h>
-#include <math.h>
-
-
-
-
-int worldMap[MAP_H][MAP_W]=
-{
-  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,2,2,2,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1},
-  {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,3,0,0,0,3,0,0,0,1},
-  {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,2,2,0,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,0,0,0,0,5,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,0,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
-};
-
-double posx = 5.5;
-double posy = 5.5;
-
-clock_t start = 0;
-clock_t end = 0;
-
-int	pressed = 0;
-double	stepx = 0;
-double stepy = 0;
-double planex = 1;
-double planey = 0;
-double dirx = 0;
-double diry = -1;
-t_keys keys;
-double obsdist[WIDTH];
-double rays[WIDTH];
-char	side[WIDTH];
 
 int	key_press(int keycode, t_keys *keys)
 {
@@ -86,20 +35,20 @@ int	key_release(int keycode, t_keys *keys)
 	return 0;
 }
 
-void	draw_map(t_mlxconf *conf)
+void	draw_map(t_mlxconf *conf, t_wmap *wmap, t_motion *mn)
 {
-	int pixx = posx * (double)MINIM_W / MAP_W;
-	int pixy = posy * (double)MINIM_H / MAP_H;
+	int pixx = mn->posx * (double)conf->minimap.w / wmap->w;
+	int pixy = mn->posy * (double)conf->minimap.h / wmap->h;
 
 	int y = 0;
-	while (y < MINIM_H)
+	while (y < conf->minimap.h)
 	{
 		int x = 0;
-		while (x < MINIM_W)
+		while (x < conf->minimap.w)
 		{
-			int i = y * MAP_H / MINIM_H;
-			int j = x * MAP_W / MINIM_W;
-			int val = worldMap[i][j];
+			int i = y * (double) wmap->h / conf->minimap.h;
+			int j = x * (double) wmap->w / conf->minimap.w;
+			int val = wmap->wmap[i][j];
 			int color;
 			if (val == 0)
 				color = 0x0;
@@ -115,29 +64,29 @@ void	draw_map(t_mlxconf *conf)
 			{
 				color = 0xff00ff;
 			}
-			ft_pixel_put(x,y,color,&conf->map);
+			ft_pixel_put(x,y,color,&conf->minimap);
 			x++;
 		}
 		y++;
 	}
 }
 
-void rotate_dir(double rotspeed)
+void rotate_dir(double rotspeed, t_motion *mn)
 {
-	double olddirx = dirx;
-	dirx = dirx * cos(rotspeed) - diry * sin(rotspeed);
-	diry = olddirx * sin(rotspeed) + diry * cos(rotspeed);
+	double olddirx = mn->dirx;
+	mn->dirx = mn->dirx * cos(rotspeed) - mn->diry * sin(rotspeed);
+	mn->diry = olddirx * sin(rotspeed) + mn->diry * cos(rotspeed);
 
-	double oldplanex = planex;
-	planex = planex * cos(rotspeed) - planey * sin(rotspeed);
-	planey = oldplanex * sin(rotspeed) + planey * cos(rotspeed);
+	double oldplanex = mn->planex;
+	mn->planex = mn->planex * cos(rotspeed) - mn->planey * sin(rotspeed);
+	mn->planey = oldplanex * sin(rotspeed) + mn->planey * cos(rotspeed);
 }
 
-void	mod_pos(t_keys *keys)
+void	mod_pos(clock_t *end, t_keys *keys, t_motion *mn, t_wmap *wmap)
 {
-	start = end;
-	end = clock();
-	double fps = (double) (end - start) / CLOCKS_PER_SEC;
+	clock_t start = *end;
+	*end = clock();
+	double fps = (double) (*end - start) / CLOCKS_PER_SEC;
 
 	double spmov = fps * 3;
 
@@ -146,34 +95,33 @@ void	mod_pos(t_keys *keys)
 
 	if (keys->w)
 	{
-		stepx = dirx;
-		stepy = diry;
+		stepx = mn->dirx;
+		stepy = mn->diry;
 	}
 	if (keys->s)
 	{
-		stepx = -dirx;
-		stepy = -diry;
+		stepx = -mn->dirx;
+		stepy = -mn->diry;
 	}
 	if (keys->a)
 	{
-		stepx = dirx * cos(-1.5707) - diry * sin(-1.5707);
-		stepy = dirx * sin(-1.5707) + diry * cos(-1.5707);
-
+		stepx = mn->dirx * cos(-1.5707) - mn->diry * sin(-1.5707);
+		stepy = mn->dirx * sin(-1.5707) + mn->diry * cos(-1.5707);
 	}
 	if (keys->d)
 	{
-		stepx = dirx * cos(1.5707) - diry * sin(1.5707);
-		stepy = dirx * sin(1.5707) + diry * cos(1.5707);
+		stepx = mn->dirx * cos(1.5707) - mn->diry * sin(1.5707);
+		stepy = mn->dirx * sin(1.5707) + mn->diry * cos(1.5707);
 	}
-	double newx = posx + stepx * spmov;
-	double newy = posy + stepy * spmov;
-	if (newx >= 0 && newx < MAP_W && newy >= 0 && newy < MAP_H)
+	double newx = mn->posx + stepx * spmov;
+	double newy = mn->posy + stepy * spmov;
+	if ((int)newx >= 0 && (int)newx < wmap->w && (int)newy >= 0 && (int)newy < wmap->h)
 	{
 
-		if (worldMap[(int)newy][(int)newx] == 0)
+		if (wmap->wmap[(int)newy][(int)newx] == 0)
 		{
-			posx = newx;
-			posy = newy;
+			mn->posx = newx;
+			mn->posy = newy;
 		}
 	}
 
@@ -182,51 +130,52 @@ void	mod_pos(t_keys *keys)
 	if (keys->left)
 	{
 		rotspeed = -rotspeed;
-		rotate_dir(rotspeed);
+		rotate_dir(rotspeed, mn);
 
 	}
 	if (keys->right)
 	{
-		rotate_dir(rotspeed);
+		rotate_dir(rotspeed, mn);
 	}
 
 }
 
-void	obstacle_dist()
+void	obstacle_dist(t_motion *mn, int **wmap)
 {
-
 	int	x = 0;
 	while (x < WIDTH)
 	{
-		double ratiox =  (dirx + rays[x]*planex) == 0 ? 999999 : 1/fabs(dirx + rays[x]*planex); //TODO: if div is 0
-		double ratioy = (diry + rays[x]*planey) == 0 ? 999999 : 1/fabs(diry + rays[x]*planey);
+		double raydirx = mn->dirx + mn->rays[x]*mn->planex;
+		double raydiry = mn->diry + mn->rays[x]*mn->planey;
+		double ratiox =  (raydirx) == 0 ? 999999 : 1/fabs(raydirx); //TODO: if div is 0
+		double ratioy = raydiry == 0 ? 999999 : 1/fabs(raydiry);
 		double distx;
 		double disty;
 		double sx;
 		double	sy;
-		if (dirx + rays[x]*planex < 0)
+		if (raydirx < 0)
 		{
-			distx = (posx - floor(posx)) * ratiox;
+			distx = (mn->posx - floor(mn->posx)) * ratiox;
 			sx = -1;
 		}
 		else
 		{
-			distx = (ceil(posx) - posx) * ratiox;
+			distx = (ceil(mn->posx) - mn->posx) * ratiox;
 			sx = 1;
 		}
-		if (diry + rays[x]*planey < 0)
+		if (raydiry < 0)
 		{
-			disty = (posy - floor(posy)) * ratioy;
+			disty = (mn->posy - floor(mn->posy)) * ratioy;
 			sy = -1;
 		}
 		else
 		{
-			disty = (ceil(posy) - posy) * ratioy;
+			disty = (ceil(mn->posy) - mn->posy) * ratioy;
 			sy = 1;
 		}
 		int hit = 0;
-		double obsx = (int) posx;
-		double obsy = (int) posy;
+		double obsx = (int) mn->posx;
+		double obsy = (int) mn->posy;
 
 		while(!hit)
 		{
@@ -234,24 +183,24 @@ void	obstacle_dist()
 			{
 				obsx += sx;
 				distx += ratiox;
-				side[x] = 0;
+				mn->side[x] = 0;
 			}
 			else
 			{
 				obsy += sy;
 				disty += ratioy;
-				side[x] = 1;
+				mn->side[x] = 1;
 			}
-			if (worldMap[(int)obsy][(int)obsx] != 0)
+			if (wmap[(int)obsy][(int)obsx] != 0)
 			{
-				if (side[x] == 0)
+				if (mn->side[x] == 0)
 				{
-					obsdist[x] = distx - ratiox;
+					mn->obsdist[x] = distx - ratiox;
 
 				}
 				else
 				{
-					obsdist[x] = disty - ratioy;
+					mn->obsdist[x] = disty - ratioy;
 
 				}
 				break;
@@ -262,81 +211,74 @@ void	obstacle_dist()
 	}
 }
 
-void draw_rays(t_mlxconf *conf)
+void draw_rays(t_mlxconf *conf, t_wmap *wmap, t_motion *mn)
 {
-		int pixx0 = posx * (double)MINIM_W/ MAP_W;
-		int pixy0 = posy * (double)MINIM_H/ MAP_H;
+		int pixx0 = mn->posx * (double)conf->minimap.w/ wmap->w;
+		int pixy0 = mn->posy * (double)conf->minimap.h/ wmap->h;
 		int	x = 0;
 		while (x < WIDTH)
 		{
-			double obsx = posx + (dirx + planex*rays[x]) * obsdist[x];
-			double obsy = posy + (diry + planey*rays[x]) * obsdist[x];
-			int pixx1 = obsx * (double)MINIM_W / MAP_W;
-			int pixy1 = obsy * (double)MINIM_H / MAP_H;
-			ft_draw_line(pixx0, pixy0, pixx1, pixy1, 0x00ff00, &conf->map);
+			double obsx = mn->posx + (mn->dirx + mn->planex*mn->rays[x]) * mn->obsdist[x];
+			double obsy = mn->posy + (mn->diry + mn->planey*mn->rays[x]) * mn->obsdist[x];
+			int pixx1 = obsx * (double)conf->minimap.w/ wmap->w;
+			int pixy1 = obsy * (double)conf->minimap.h/ wmap->h;
+			ft_draw_line(pixx0, pixy0, pixx1, pixy1, 0x00ff00, &conf->minimap);
 			x++;
 		}
 }
 
-void	draw_3d(t_mlxconf *conf)
+void	draw_3d(t_mlximg *world, t_motion *mn)
 {
 	int	x = 0;
 	double line_height;
-	while (x < WIDTH)
+	while (x < world->w)
 	{
-		line_height = HEIGHT/obsdist[x];
-		int start = HEIGHT/2 -line_height/2;
-		int end = HEIGHT/2 + line_height/2;
+		line_height = world->h/mn->obsdist[x];
+		int start = world->h/2 -line_height/2;
+		int end = world->h/2 + line_height/2;
 		int color = 0x00ff00;
-		if (side[x] == 0)
+		if (mn->side[x] == 0)
 		{
 			color = (color & 0xf0f0f0f0) >> 1;
 		}
-		ft_draw_line(x, start, x, end, color, &conf->world);
+		ft_draw_line(x, start, x, end, color, world);
 		x++;
 	}
 }
 
-int game_loop(t_mlxconf *conf)
+int game_loop(t_game *game)
 {
-	draw_map(conf);
-	obstacle_dist();
-	draw_rays(conf);
-	ft_set_bg(conf);
-	draw_3d(conf);
-	ft_update_img(conf);
-	mod_pos(&keys);
-
-
-	return 1;
+	draw_map(&game->mlxconf, &game->wmap, &game->motion);
+	obstacle_dist(&game->motion, game->wmap.wmap);
+	draw_rays(&game->mlxconf, &game->wmap, &game->motion);
+	ft_set_bg(&game->mlxconf);
+	draw_3d(&game->mlxconf.world, &game->motion);
+	ft_update_img(&game->mlxconf);
+	mod_pos(&game->clock, &game->keys, &game->motion, &game->wmap);
+	return (1);
 }
 
-void ray_constants()
+void ray_constants(t_motion *motion)
 {
 	int	x = 0;
 	while (x < WIDTH)
 	{
 		double camx = 2 * (double) x / WIDTH - 1;
 		double ray = camx * 1;
-		rays[x] = ray;
+		motion->rays[x] = ray;
 		x++;
 	}
 }
 
 int main(void)
 {
-	t_mlxconf	conf;
+	t_game	game;
 
-	init_keys(&keys);
-	if (ft_mlx_init(&conf, "Cub3D 42") != 0)
-		ft_error("Error initializing mlx");
-	// ft_set_bg(&conf);
-	// ft_update_img(&conf);
-	ray_constants();
-	mlx_hook(conf.win, KeyPress, KeyPressMask, key_press, &keys);
-	mlx_hook(conf.win, KeyRelease, KeyReleaseMask, key_release, &keys);
-	// mlx_key_hook(conf.win, handle_key, 0);
-	mlx_loop_hook(conf.mlx, game_loop, &conf);
-	mlx_loop(conf.mlx);
+	if (game_init(&game, "Cub3D 42") != 0)
+		ft_error("Error initializing game");
+	mlx_hook(game.mlxconf.win, KeyPress, KeyPressMask, key_press, &game.keys);
+	mlx_hook(game.mlxconf.win, KeyRelease, KeyReleaseMask, key_release, &game.keys);
+	mlx_loop_hook(game.mlxconf.mlx, game_loop, &game);
+	mlx_loop(game.mlxconf.mlx);
 	return (0);
 }
