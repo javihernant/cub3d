@@ -2,51 +2,6 @@
 #include <stdlib.h>
 #include "libft.h"
 
-int worldMap[MAP_H][MAP_W]=
-{
-  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,2,2,2,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1},
-  {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,3,0,0,0,3,0,0,0,1},
-  {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,2,2,0,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,0,0,0,0,5,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,0,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
-};
-
-int	read_map(t_wmap *wmap)
-{
-	//TODO
-	wmap->wmap = malloc(sizeof(int*)*MAP_H);
-	for (int i = 0; i < MAP_H; i++)
-	{
-		wmap->wmap[i] = malloc(sizeof(int)*MAP_W);
-		for (int j = 0; j<MAP_W; j++)
-		{
-			wmap->wmap[i][j] = worldMap[i][j];
-		}
-	}
-	wmap->w = MAP_W;
-	wmap->h = MAP_H;
-	return (0);
-}
-
 void	init_keys(t_keys *keys)
 {
 	keys->w = 0;
@@ -57,17 +12,38 @@ void	init_keys(t_keys *keys)
 	keys->right = 0;
 }
 
-void	init_motion(t_motion *motion)
+int	key_press(int keycode, t_keys *keys)
 {
-	motion->posx = 2; //TODO: choose a pos that is empty
-	motion->posy = 2;
-	motion->stepx = 0;
-	motion->stepy = 0;
-	motion->planex = 1;
-	motion->planey = 0;
-	motion->dirx = 0;
-	motion->diry = -1;
-	ray_constants(motion);
+	if (keycode == XK_a)
+		keys->a = 1;
+	else if (keycode == XK_w)
+		keys->w = 1;
+	else if (keycode == XK_s)
+		keys->s = 1;
+	else if (keycode == XK_d)
+		keys->d = 1;
+	else if (keycode == XK_Left)
+		keys->left = 1;
+	else if (keycode == XK_Right)
+		keys->right = 1;
+	return 0;
+}
+
+int	key_release(int keycode, t_keys *keys)
+{
+	if (keycode == XK_a)
+		keys->a = 0;
+	else if (keycode == XK_w)
+		keys->w = 0;
+	else if (keycode == XK_s)
+		keys->s = 0;
+	else if (keycode == XK_d)
+		keys->d = 0;
+	else if (keycode == XK_Left)
+		keys->left = 0;
+	else if (keycode == XK_Right)
+		keys->right = 0;
+	return 0;
 }
 
 int	ft_init_img(t_mlximg *mlximg, void *mlx, int w, int h)
@@ -100,18 +76,6 @@ int	ft_mlx_init(t_mlxconf *conf, char *title)
 	return (0);
 }
 
-int	game_init(t_game *game, char *title)
-{
-	if (read_map(&game->wmap) != 0)
-		ft_error("Error reading map from the file provided");
-	game->clock = 0;
-	init_keys(&game->keys);
-	init_motion(&game->motion);
-	if (ft_mlx_init(&game->mlxconf, title) != 0)
-		ft_error("Error reading map from the file provided");
-	return (0);
-}
-
 void	ft_set_color(char *dst, int color, int endian)
 {
 	if (endian == 1)
@@ -140,18 +104,18 @@ void	ft_pixel_put(int x, int y, int color, t_mlximg *conf)
 	ft_set_color(dst, color, conf->endian);
 }
 
-void	ft_set_bg(t_mlxconf *conf)
+void	ft_set_bg(t_mlximg *img)
 {
 	int		i;
 	int		j;
 
 	i = 0;
-	while (i < HEIGHT)
+	while (i < img->h)
 	{
 		j = 0;
-		while (j < WIDTH)
+		while (j < img->w)
 		{
-			ft_pixel_put(j, i, 0xffffff, &conf->world);
+			ft_pixel_put(j, i, 0xffffff, img);
 			j++;
 		}
 		i++;

@@ -3,10 +3,9 @@
 
 # define WIDTH 640
 # define HEIGHT 480
-#define MINIM_W  (WIDTH / 5)
-#define MINIM_H  (HEIGHT / 5)
-#define MAP_W 24
-#define MAP_H 24
+# define MINIM_W  (WIDTH / 5)
+# define MINIM_H  (HEIGHT / 5)
+
 
 # include "mlx.h"
 
@@ -49,10 +48,6 @@ typedef struct s_motion {
 	int		wmap_h;
 }	t_motion;
 
-
-
-
-
 typedef struct s_keys {
 	char	w;
 	char	a;
@@ -79,14 +74,15 @@ typedef struct s_game {
 	clock_t		clock;
 }	t_game;
 
-int	init_gamedata(t_game *game, char *title);
-void	ft_set_bg(t_mlxconf *conf);
+int	ft_mlx_init(t_mlxconf *conf, char *title);
+void	ft_set_bg(t_mlximg *img);
 void	ft_update_img(t_mlxconf *conf);
 void	ft_pixel_put(int x, int y, int color, t_mlximg *conf);
 void	ft_update_img(t_mlxconf *conf);
 void	ft_draw_line(int x1, int y1, int x2, int y2, int color, t_mlximg *mlximg);
 void	init_keys(t_keys *keys);
-int		game_init(t_game *game, char *title);
+int		key_release(int keycode, t_keys *keys);
+int		key_press(int keycode, t_keys *keys);
 void	ray_constants(t_motion *motion);
 
 
