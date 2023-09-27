@@ -2,6 +2,8 @@
 #include "libft.h"
 # define MAP_W 24
 # define MAP_H 24
+# define TEX_W 64
+# define TEX_H 64
 
 int worldMap[MAP_H][MAP_W]=
 {
@@ -48,9 +50,42 @@ int	read_map(t_wmap *wmap)
 	return (0);
 }
 
+int	load_tex(t_mlximg **tex, char *path, void *mlx)
+{
+	*tex = malloc(sizeof(t_mlximg));
+	(*tex)->img = mlx_xpm_file_to_image(mlx, path, &(*tex)->w, &(*tex)->h);
+	if ((*tex)->img == 0)
+		return (1);
+	(*tex)->buff = mlx_get_data_addr((*tex)->img, &(*tex)->bpp, &(*tex)->line_length, &(*tex)->endian);
+	return (0);
+}
+int	load_textures(t_wmap *wm, void *mlx)
+{
+	int n = 1;
+	wm->tex = malloc(sizeof(t_mlximg *) * n);
+	if (load_tex(&wm->tex[0], "imgs/eagle.xpm", mlx) != 0)
+	{
+		return (1);
+	}
+	return (0);
+
+}
+
+void ray_constants(t_motion *mn)
+{
+	int	x = 0;
+	while (x < WIDTH)
+	{
+		double camx = 2 * (double) x / WIDTH - 1;
+		double ray = camx * 0.8;
+		mn->rays[x] = ray;
+		x++;
+	}
+}
+
 void	init_motion(t_motion *motion)
 {
-	motion->posx = 2; //TODO: choose a pos that is empty
+	motion->posx = 2; //TODO: choose pos according to file. And direction.
 	motion->posy = 2;
 	motion->stepx = 0;
 	motion->stepy = 0;
@@ -70,5 +105,9 @@ int	game_init(t_game *game, char *title)
 	init_motion(&game->motion);
 	if (ft_mlx_init(&game->mlxconf, title) != 0)
 		ft_error("Error reading map from the file provided");
+	if (load_textures(&game->wmap, game->mlxconf.mlx) != 0)
+	{
+		ft_error("Error loading textures");
+	}
 	return (0);
 }

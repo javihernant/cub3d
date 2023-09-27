@@ -7,8 +7,8 @@ void draw_rays(t_mlxconf *conf, t_wmap *wmap, t_motion *mn)
 		int	x = 0;
 		while (x < WIDTH)
 		{
-			double obsx = mn->posx + (mn->dirx + mn->planex*mn->rays[x]) * mn->obsdist[x];
-			double obsy = mn->posy + (mn->diry + mn->planey*mn->rays[x]) * mn->obsdist[x];
+			double obsx = mn->posx + mn->raydirx[x] * mn->obsdist[x];
+			double obsy = mn->posy + mn->raydiry[x] * mn->obsdist[x];
 			int pixx1 = obsx * (double)conf->minimap.w/ wmap->w;
 			int pixy1 = obsy * (double)conf->minimap.h/ wmap->h;
 			ft_draw_line(pixx0, pixy0, pixx1, pixy1, 0x00ff00, &conf->minimap);

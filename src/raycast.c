@@ -1,19 +1,22 @@
 #include "mlxutils.h"
 
-void ray_constants(t_motion *motion)
+void	raydir_calc(t_motion *mn)
 {
 	int	x = 0;
 	while (x < WIDTH)
 	{
-		double camx = 2 * (double) x / WIDTH - 1;
-		double ray = camx * 1;
-		motion->rays[x] = ray;
+		mn->raydirx[x] = mn->dirx + mn->planex * mn->rays[x];
+		mn->raydiry[x] = mn->diry + mn->planey * mn->rays[x];
 		x++;
 	}
+
 }
 
-void	draw_3d(t_mlximg *world, t_motion *mn)
+
+
+void	draw_3d(t_mlximg *world, t_motion *mn, t_wmap *wm)
 {
+	(void) wm;
 	int	x = 0;
 	double line_height;
 	while (x < world->w)
@@ -21,12 +24,41 @@ void	draw_3d(t_mlximg *world, t_motion *mn)
 		line_height = world->h/mn->obsdist[x];
 		int start = world->h/2 -line_height/2;
 		int end = world->h/2 + line_height/2;
-		int color = 0x00ff00;
+		double texx;
+		t_mlximg *tex = wm->tex[0];
 		if (mn->side[x] == 0)
 		{
-			color = (color & 0xf0f0f0f0) >> 1;
+			texx = mn->posy + mn->raydiry[x]*mn->obsdist[x];
+
 		}
-		ft_draw_line(x, start, x, end, color, world);
+		else
+		{
+
+			texx = mn->posx + mn->raydirx[x]*mn->obsdist[x];
+
+		}
+		texx = (texx - floor(texx));
+		int texxx = texx * (tex->w - 1);
+		int y = start;
+		// if (y < 0)
+		// 	y = 0;
+		double txstep = (double) tex->h / line_height;
+		// double postexy = (start + line_height - world->h / 2)*txstep;
+		double postexy = 0;
+
+		while (y < end)
+		{
+			int texy = (int) postexy & (tex->h - 1);
+			int color = ((int *)(tex->buff))[texy * tex->w + texxx];
+			if (mn->side[x] == 0)
+			{
+				color = (color & 0xf0f0f0f0) >> 1;
+			}
+			ft_pixel_put(x, y, color, world);
+			postexy += txstep;
+			y++;
+		}
+		// ft_draw_line(x, start, x, end, 0xff0000, world);
 		x++;
 	}
 }
@@ -36,15 +68,14 @@ void	obstacle_dist(t_motion *mn, int **wmap)
 	int	x = 0;
 	while (x < WIDTH)
 	{
-		double raydirx = mn->dirx + mn->rays[x]*mn->planex;
-		double raydiry = mn->diry + mn->rays[x]*mn->planey;
-		double ratiox =  (raydirx) == 0 ? 999999 : 1/fabs(raydirx); //TODO: if div is 0
-		double ratioy = raydiry == 0 ? 999999 : 1/fabs(raydiry);
+
+		double ratiox =  (mn->raydirx[x]) == 0 ? 999999 : 1/fabs(mn->raydirx[x]); //TODO: if div is 0
+		double ratioy = mn->raydiry[x] == 0 ? 999999 : 1/fabs(mn->raydiry[x]);
 		double distx;
 		double disty;
 		double sx;
 		double	sy;
-		if (raydirx < 0)
+		if (mn->raydirx[x] < 0)
 		{
 			distx = (mn->posx - floor(mn->posx)) * ratiox;
 			sx = -1;
@@ -54,7 +85,7 @@ void	obstacle_dist(t_motion *mn, int **wmap)
 			distx = (ceil(mn->posx) - mn->posx) * ratiox;
 			sx = 1;
 		}
-		if (raydiry < 0)
+		if (mn->raydiry[x] < 0)
 		{
 			disty = (mn->posy - floor(mn->posy)) * ratioy;
 			sy = -1;

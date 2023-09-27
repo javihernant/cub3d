@@ -42,6 +42,8 @@ typedef struct s_motion {
 	double	diry;
 	double	obsdist[WIDTH];
 	double	rays[WIDTH];
+	double raydirx[WIDTH];
+	double raydiry[WIDTH];
 	char	side[WIDTH];
 	int		**wmap;
 	int		wmap_w;
@@ -62,6 +64,7 @@ typedef struct s_wmap {
 	int	**wmap;
 	int	w;
 	int	h;
+	t_mlximg **tex;
 	//TODO:Textures
 }	t_wmap;
 
