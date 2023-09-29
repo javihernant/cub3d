@@ -1,5 +1,56 @@
 #include "mlxutils.h"
 
+// void	floor_cast(t_motion *mn, t_mlximg *wd)
+// {
+// 	int	y = 0;
+// 	while (y < wd->h)
+// 	{
+
+// 		y++
+// 	}
+// }
+
+void	floor_cast(t_motion *mn, t_mlximg *wd, t_wmap *wm)
+{
+	int y = 0;
+	while (y < wd->h)
+	{
+		double raydirx0 = mn->dirx - mn->planex;
+		double raydiry0 = mn->diry - mn->planey;
+		double raydirx1 = mn->dirx + mn->planex;
+		double raydiry1 = mn->diry + mn->planey;
+
+
+		// Horizontal distance from the camera to the floor for the current row.
+		// 0.5 is the z position exactly in the middle between floor and ceiling.
+		double rowdist = (double)(wd->h/2) / (y - wd->h/2);
+
+		// calculate the real world step vector we have to add for each x (parallel to camera plane)
+		// adding step by step avoids multiplications with a weight in the inner loop
+		double stepx = rowdist * (raydirx1 - raydirx0) / wd->w;
+		double stepy = rowdist * (raydiry1 - raydiry0) / wd->w;
+
+		// real world coordinates of the leftmost column. This will be updated as we step to the right.
+		double floorx = mn->posx + rowdist * raydirx0;
+		double floory = mn->posy + rowdist * raydiry0;
+		t_mlximg *tex = wm->tex[1];
+		int x = 0;
+		while (x < wd->w)
+		{
+			int tx = (int)((floorx - floor(floorx)) * tex->w) & (tex->w - 1);
+			int ty = (int)((floory - floor(floory)) * tex->h) & (tex->h - 1);
+			floorx += stepx;
+			floory += stepy;
+			int color = ((int *)tex->buff)[ty * tex->w + tx];
+			ft_pixel_put(x, y, color, wd);
+			ft_pixel_put(x, wd->h - 1 - y, color, wd);
+			x++;
+
+		}
+		y++;
+	}
+}
+
 void	raydir_calc(t_motion *mn)
 {
 	int	x = 0;
@@ -11,8 +62,6 @@ void	raydir_calc(t_motion *mn)
 	}
 
 }
-
-
 
 void	draw_3d(t_mlximg *world, t_motion *mn, t_wmap *wm)
 {

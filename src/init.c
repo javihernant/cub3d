@@ -61,9 +61,13 @@ int	load_tex(t_mlximg **tex, char *path, void *mlx)
 }
 int	load_textures(t_wmap *wm, void *mlx)
 {
-	int n = 1;
+	int n = 2;
 	wm->tex = malloc(sizeof(t_mlximg *) * n);
 	if (load_tex(&wm->tex[0], "imgs/eagle.xpm", mlx) != 0)
+	{
+		return (1);
+	}
+	if (load_tex(&wm->tex[1], "imgs/wood.xpm", mlx) != 0)
 	{
 		return (1);
 	}
