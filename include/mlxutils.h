@@ -64,15 +64,32 @@ typedef struct s_wmap {
 	int	**wmap;
 	int	w;
 	int	h;
-	t_mlximg **tex;
-	//TODO:Textures
+	t_mlximg **tex; //TODO: change to (t_mlximg *)
 }	t_wmap;
+
+typedef struct s_sprt {
+	double x;
+	double y;
+	int txnum;
+}	t_sprt;
+
+typedef struct s_spsort {
+	int	order;
+	double dist;
+}	t_spsort;
+
+typedef struct s_spdata {
+	int	n;
+	t_spsort *sort;
+	t_sprt	*sprites;
+}	t_spdata;
 
 
 typedef struct s_game {
 	t_mlxconf	mlxconf;
 	t_keys		keys;
 	t_motion	motion;
+	t_spdata	sprites;
 	t_wmap		wmap;
 	clock_t		clock;
 }	t_game;

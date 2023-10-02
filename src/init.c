@@ -33,6 +33,57 @@ int worldMap[MAP_H][MAP_W]=
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 };
 
+#define NUM_SPRTS 19
+t_sprt sprite[NUM_SPRTS] =
+{
+  {20.5, 11.5, 3}, //green light in front of playerstart
+  //green lights in every room
+  {18.5,4.5, 3},
+  {10.0,4.5, 3},
+  {10.0,12.5,3},
+  {3.5, 6.5, 3},
+  {3.5, 20.5,3},
+  {3.5, 14.5,3},
+  {14.5,20.5,3},
+
+  //row of pillars in front of wall: fisheye test
+  {18.5, 10.5, 2},
+  {18.5, 11.5, 2},
+  {18.5, 12.5, 2},
+
+  //some barrels around the map
+  {21.5, 1.5, 4},
+  {15.5, 1.5, 4},
+  {16.0, 1.8, 4},
+  {16.2, 1.2, 4},
+  {3.5,  2.5, 4},
+  {9.5, 15.5, 4},
+  {10.0, 15.1,4},
+  {10.5, 15.8,4},
+};
+
+
+int	init_sprites(t_spdata *data)
+{
+	int	n = NUM_SPRTS;
+	data->n = n;
+	data->sprites = malloc(sizeof(t_sprt) * n);
+	if (!data->sprites)
+		return (1);
+	int	i = 0;
+	while (i < n)
+	{
+		data->sprites[i].x = sprite[i].x;
+		data->sprites[i].y = sprite[i].y;
+		data->sprites[i].txnum = sprite[i].txnum;
+		i++;
+	}
+	data->sort = malloc(sizeof(t_spsort) * n);
+	if (!data->sort)
+		return (1);
+	return (0);
+}
+
 int	read_map(t_wmap *wmap)
 {
 	//TODO
@@ -61,13 +112,25 @@ int	load_tex(t_mlximg **tex, char *path, void *mlx)
 }
 int	load_textures(t_wmap *wm, void *mlx)
 {
-	int n = 2;
+	int n = 5;
 	wm->tex = malloc(sizeof(t_mlximg *) * n);
 	if (load_tex(&wm->tex[0], "imgs/eagle.xpm", mlx) != 0)
 	{
 		return (1);
 	}
 	if (load_tex(&wm->tex[1], "imgs/wood.xpm", mlx) != 0)
+	{
+		return (1);
+	}
+	if (load_tex(&wm->tex[2], "imgs/pillar.xpm", mlx) != 0)
+	{
+		return (1);
+	}
+	if (load_tex(&wm->tex[3], "imgs/greenlight.xpm", mlx) != 0)
+	{
+		return (1);
+	}
+	if (load_tex(&wm->tex[4], "imgs/barrel.xpm", mlx) != 0)
 	{
 		return (1);
 	}
@@ -104,6 +167,8 @@ int	game_init(t_game *game, char *title)
 {
 	if (read_map(&game->wmap) != 0)
 		ft_error("Error reading map from the file provided");
+	if (init_sprites(&game->sprites) != 0)
+		ft_error("Error assigning memory to sprites");
 	game->clock = 0;
 	init_keys(&game->keys);
 	init_motion(&game->motion);

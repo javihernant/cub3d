@@ -3,6 +3,8 @@
 #include "game.h"
 
 void	floor_cast(t_motion *mn, t_mlximg *wd, t_wmap *wm);
+void	cast_sprites(t_wmap *wm, t_spdata *spdata, t_motion *mn, t_mlximg *wd);
+
 
 int game_loop(t_game *game)
 {
@@ -13,6 +15,7 @@ int game_loop(t_game *game)
 	ft_set_bg(&game->mlxconf.world);
 	floor_cast(&game->motion, &game->mlxconf.world, &game->wmap);
 	draw_3d(&game->mlxconf.world, &game->motion, &game->wmap);
+	cast_sprites(&game->wmap, &game->sprites, &game->motion, &game->mlxconf.world);
 	ft_update_img(&game->mlxconf);
 	mod_pos(&game->clock, &game->keys, &game->motion, &game->wmap);
 	return (1);
