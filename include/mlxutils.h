@@ -42,8 +42,14 @@ typedef struct s_motion {
 	double	diry;
 	double	obsdist[WIDTH];
 	double	rays[WIDTH];
-	double raydirx[WIDTH];
-	double raydiry[WIDTH];
+	double	raydirx[WIDTH];
+	double	raydiry[WIDTH];
+	double	distx[WIDTH];
+	double	disty[WIDTH];
+	double	ratiox[WIDTH];
+	double	ratioy[WIDTH];
+	int		obsx[WIDTH];
+	int		obsy[WIDTH];
 	char	side[WIDTH];
 	int		**wmap;
 	int		wmap_w;

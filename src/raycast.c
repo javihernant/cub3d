@@ -112,72 +112,182 @@ void	draw_3d(t_mlximg *world, t_motion *mn, t_wmap *wm)
 	}
 }
 
+/////////////////////////////////////DOOR//////////////////////////////////////////
+int	is_door(int x, int y)
+{
+	int doorx = 6;
+	int doory = 7;
+	return (x == doorx && y == doory) || (x == 8 && y == 4);
+
+	(void)x;
+	(void)y;
+	return 0;
+
+}
+
+double	get_max_lim(t_motion *mn, int x)
+{
+
+	int	doorx;
+	int	doory;
+
+	doorx = mn->obsx[x];
+	doory = mn->obsy[x];
+	if (mn->side[x] == 0)
+		if ((int) mn->posx < doorx)
+			return  (doorx + 0.5);
+		else
+			return (doorx + 1);
+	else
+		if ((int) mn->posy < doory)
+			return  (doory + 0.5);
+		else
+			return (doory + 1);
+}
+
+int	hits_lateral(t_motion *mn, int x, double obsauxx, double obsauxy)
+{
+	double	max_lim;
+	max_lim = get_max_lim(mn, x);
+
+	if (mn->side[x] == 0)
+	{
+		return (obsauxx > (max_lim - 0.5) && obsauxx < max_lim  && ((int) obsauxy == mn->obsy[x] || (int) obsauxy == (mn->obsy[x] + 1)));
+	}
+	else
+	{
+		return (obsauxy > (max_lim - 0.5) && obsauxy < max_lim  && ((int) obsauxx == mn->obsx[x] || (int) obsauxx == (mn->obsx[x] + 1)));
+	}
+}
+
+void	door_dist_aux(t_motion *mn, int x, double obsx, double obsy)
+{
+	if (hits_lateral(mn, x, obsx, obsy))
+	{
+		if (mn->side[x] == 0)
+		{
+			mn->obsdist[x] = mn->disty[x];
+			mn->side[x] = 1;
+		}
+		else
+		{
+			mn->obsdist[x] = mn->distx[x];
+			mn->side[x] = 0;
+		}
+	}
+	else
+	{
+		if (mn->side[x] == 0)
+			mn->obsdist[x] = mn->distx[x] - mn->ratiox[x]/2;
+		else
+			mn->obsdist[x] = mn->disty[x] - mn->ratioy[x]/2;
+	}
+}
+
+void	door_dist(t_motion *mn, int x)
+{
+	double	obsauxx;
+	double	obsauxy;
+
+	if (mn->side[x] == 0)
+	{
+		obsauxx = mn->posx + mn->raydirx[x] * (mn->disty[x]);
+		obsauxy = mn->posy + mn->raydiry[x] * (mn->disty[x]);
+	}
+	else
+	{
+		obsauxx = mn->posx + mn->raydirx[x] * (mn->distx[x]);
+		obsauxy = mn->posy + mn->raydiry[x] * (mn->distx[x]);
+	}
+	door_dist_aux(mn, x, obsauxx, obsauxy);
+}
+
+/////////////////////////////////////DOOR//////////////////////////////////////////
+
+/////////////////////////////////////obstacle_dist//////////////////////////////////////////
+
+void	init_dist(t_motion *mn, int x, int *sx, int *sy)
+{
+	mn->ratiox[x] =  (mn->raydirx[x]) == 0 ? 999999 : 1/fabs(mn->raydirx[x]); //TODO: if div is 0
+	mn->ratioy[x] = mn->raydiry[x] == 0 ? 999999 : 1/fabs(mn->raydiry[x]);
+
+	if (mn->raydirx[x] < 0)
+	{
+		mn->distx[x] = (mn->posx - floor(mn->posx)) * mn->ratiox[x];
+		*sx = -1;
+	}
+	else
+	{
+		mn->distx[x] = (ceil(mn->posx) - mn->posx) * mn->ratiox[x];
+		*sx = 1;
+	}
+	if (mn->raydiry[x] < 0)
+	{
+		mn->disty[x] = (mn->posy - floor(mn->posy)) * mn->ratioy[x];
+		*sy = -1;
+	}
+	else
+	{
+		mn->disty[x] = (ceil(mn->posy) - mn->posy) * mn->ratioy[x];
+		*sy = 1;
+	}
+}
+
 void	obstacle_dist(t_motion *mn, int **wmap)
 {
-	int	x = 0;
+	int	x;
+	int sx;
+	int	sy;
+
+
+	x = 0;
 	while (x < WIDTH)
 	{
-
-		double ratiox =  (mn->raydirx[x]) == 0 ? 999999 : 1/fabs(mn->raydirx[x]); //TODO: if div is 0
-		double ratioy = mn->raydiry[x] == 0 ? 999999 : 1/fabs(mn->raydiry[x]);
-		double distx;
-		double disty;
-		double sx;
-		double	sy;
-		if (mn->raydirx[x] < 0)
+		init_dist(mn, x, &sx, &sy);
+		mn->obsx[x] = (int) mn->posx;
+		mn->obsy[x] = (int) mn->posy;
+		while(1)
 		{
-			distx = (mn->posx - floor(mn->posx)) * ratiox;
-			sx = -1;
-		}
-		else
-		{
-			distx = (ceil(mn->posx) - mn->posx) * ratiox;
-			sx = 1;
-		}
-		if (mn->raydiry[x] < 0)
-		{
-			disty = (mn->posy - floor(mn->posy)) * ratioy;
-			sy = -1;
-		}
-		else
-		{
-			disty = (ceil(mn->posy) - mn->posy) * ratioy;
-			sy = 1;
-		}
-		int hit = 0;
-		double obsx = (int) mn->posx;
-		double obsy = (int) mn->posy;
-
-		while(!hit)
-		{
-			if (distx < disty)
+			if (mn->distx[x] < mn->disty[x])
 			{
-				obsx += sx;
-				distx += ratiox;
+				mn->obsx[x] += sx;
+				mn->distx[x] += mn->ratiox[x];
 				mn->side[x] = 0;
 			}
 			else
 			{
-				obsy += sy;
-				disty += ratioy;
+				mn->obsy[x] += sy;
+				mn->disty[x] += mn->ratioy[x];
 				mn->side[x] = 1;
 			}
-			if (wmap[(int)obsy][(int)obsx] != 0)
+
+			if (wmap[mn->obsy[x]][mn->obsx[x]] != 0)
 			{
-				if (mn->side[x] == 0)
+				if (is_door(mn->obsx[x], mn->obsy[x]))
 				{
-					mn->obsdist[x] = distx - ratiox;
+					door_dist(mn, x);
+					// if (mn->side[x] == 0)
+					// {
+					// 	mn->obsdist[x] = mn->disty[x];
+					// 	mn->side[x] = 1;
+					// }
+					// else
+					// {
+					// 	mn->obsdist[x] = mn->distx[x];
+					// 	mn->side[x] = 0;
+
+					// }
 
 				}
 				else
-				{
-					mn->obsdist[x] = disty - ratioy;
-
-				}
+					if (mn->side[x] == 0)
+						mn->obsdist[x] = mn->distx[x] - mn->ratiox[x];
+					else
+						mn->obsdist[x] = mn->disty[x] - mn->ratioy[x];
 				break;
+
 			}
 		}
-
 		x++;
 	}
 }

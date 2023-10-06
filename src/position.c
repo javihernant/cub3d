@@ -22,6 +22,8 @@ void	mod_pos(clock_t *end, t_keys *keys, t_motion *mn, t_wmap *wmap)
 	double stepx;
 	double stepy;
 
+	stepx = 0;
+	stepy = 0;
 	if (keys->w)
 	{
 		stepx = mn->dirx;

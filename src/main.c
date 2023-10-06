@@ -8,8 +8,8 @@ void	cast_sprites(t_wmap *wm, t_spdata *spdata, t_motion *mn, t_mlximg *wd);
 
 int game_loop(t_game *game)
 {
-	raydir_calc(&game->motion);
 	draw_map(&game->mlxconf, &game->wmap, &game->motion);
+	raydir_calc(&game->motion);
 	obstacle_dist(&game->motion, game->wmap.wmap);
 	draw_rays(&game->mlxconf, &game->wmap, &game->motion);
 	ft_set_bg(&game->mlxconf.world);

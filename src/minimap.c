@@ -36,9 +36,9 @@ void	draw_map(t_mlxconf *conf, t_wmap *wmap, t_motion *mn)
 			else if (val == 1)
 				color = 0xff0000;
 			else if (val == 2)
-				color = 0x00ff00;
-			else if (val == 3)
 				color = 0x0000ff;
+			else if (val == 3)
+				color = 0x00ff00;
 			else
 				color = 0xffffff;
 			if (x >= pixx - 2 && x <= pixx + 2 && y >= pixy - 2 && y <= pixy + 2)
