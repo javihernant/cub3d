@@ -74,7 +74,8 @@ void	draw_3d(t_mlximg *world, t_motion *mn, t_wmap *wm)
 		int start = world->h/2 -line_height/2;
 		int end = world->h/2 + line_height/2;
 		double texx;
-		t_mlximg *tex = wm->tex[0];
+		int	tex_num = wm->wmap[mn->obsy[x]][mn->obsx[x]] - 1;
+		t_mlximg *tex = wm->tex[tex_num];
 		if (mn->side[x] == 0)
 		{
 			texx = mn->posy + mn->raydiry[x]*mn->obsdist[x];
@@ -116,7 +117,7 @@ void	draw_3d(t_mlximg *world, t_motion *mn, t_wmap *wm)
 int	is_door(int x, int y)
 {
 	int doorx = 6;
-	int doory = 7;
+	int doory = 6;
 	return (x == doorx && y == doory) || (x == 8 && y == 4);
 
 	(void)x;

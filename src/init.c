@@ -13,7 +13,7 @@ int worldMap[MAP_H][MAP_W]=
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,2,2,2,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1}, // 5, 6
   {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
-  {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,3,0,0,0,3,0,0,0,1},
+  {1,0,0,0,0,0,1,0,0,0,2,0,0,0,0,3,0,0,0,3,0,0,0,1},
   {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
   {1,0,0,0,0,0,2,2,0,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1},
   {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -36,30 +36,30 @@ int worldMap[MAP_H][MAP_W]=
 #define NUM_SPRTS 19
 t_sprt sprite[NUM_SPRTS] =
 {
-  {20.5, 11.5, 3}, //green light in front of playerstart
+  {20.5, 11.5, 6}, //green light in front of playerstart
   //green lights in every room
-  {18.5,4.5, 3},
-  {10.0,4.5, 3},
-  {10.0,12.5,3},
-  {3.5, 6.5, 3},
-  {3.5, 20.5,3},
-  {3.5, 14.5,3},
-  {14.5,20.5,3},
+  {18.5,4.5, 9},
+  {10.0,4.5, 9},
+  {10.0,12.5,9},
+  {3.5, 6.5, 9},
+  {3.5, 20.5,9},
+  {3.5, 14.5,9},
+  {14.5,20.5,9},
 
   //row of pillars in front of wall: fisheye test
-  {18.5, 10.5, 2},
-  {18.5, 11.5, 2},
-  {18.5, 12.5, 2},
+  {18.5, 10.5, 8},
+  {18.5, 11.5, 8},
+  {18.5, 12.5, 8},
 
   //some barrels around the map
-  {21.5, 1.5, 4},
-  {15.5, 1.5, 4},
-  {16.0, 1.8, 4},
-  {16.2, 1.2, 4},
-  {3.5,  2.5, 4},
-  {9.5, 15.5, 4},
-  {10.0, 15.1,4},
-  {10.5, 15.8,4},
+  {21.5, 1.5, 10},
+  {15.5, 1.5, 10},
+  {16.0, 1.8, 10},
+  {16.2, 1.2, 10},
+  {3.5,  2.5, 10},
+  {9.5, 15.5, 10},
+  {10.0, 15.1,10},
+  {10.5, 15.8,10},
 };
 
 
@@ -112,7 +112,7 @@ int	load_tex(t_mlximg **tex, char *path, void *mlx)
 }
 int	load_textures(t_wmap *wm, void *mlx)
 {
-	int n = 5;
+	int n = 11;
 	wm->tex = malloc(sizeof(t_mlximg *) * n);
 	if (load_tex(&wm->tex[0], "imgs/eagle.xpm", mlx) != 0)
 	{
@@ -122,15 +122,39 @@ int	load_textures(t_wmap *wm, void *mlx)
 	{
 		return (1);
 	}
-	if (load_tex(&wm->tex[2], "imgs/pillar.xpm", mlx) != 0)
+	if (load_tex(&wm->tex[2], "imgs/bluestone.xpm", mlx) != 0)
 	{
 		return (1);
 	}
-	if (load_tex(&wm->tex[3], "imgs/greenlight.xpm", mlx) != 0)
+	if (load_tex(&wm->tex[3], "imgs/colorstone.xpm", mlx) != 0)
 	{
 		return (1);
 	}
-	if (load_tex(&wm->tex[4], "imgs/barrel.xpm", mlx) != 0)
+	if (load_tex(&wm->tex[4], "imgs/greystone.xpm", mlx) != 0)
+	{
+		return (1);
+	}
+	if (load_tex(&wm->tex[5], "imgs/mossy.xpm", mlx) != 0)
+	{
+		return (1);
+	}
+	if (load_tex(&wm->tex[6], "imgs/purplestone.xpm", mlx) != 0)
+	{
+		return (1);
+	}
+	if (load_tex(&wm->tex[7], "imgs/redbrick.xpm", mlx) != 0)
+	{
+		return (1);
+	}
+	if (load_tex(&wm->tex[8], "imgs/pillar.xpm", mlx) != 0)
+	{
+		return (1);
+	}
+	if (load_tex(&wm->tex[9], "imgs/greenlight.xpm", mlx) != 0)
+	{
+		return (1);
+	}
+	if (load_tex(&wm->tex[10], "imgs/barrel.xpm", mlx) != 0)
 	{
 		return (1);
 	}
