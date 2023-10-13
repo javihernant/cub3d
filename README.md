@@ -4,7 +4,7 @@ Cub3d is a basic raycaster engine that is inspired by games like Wolfenstein 3D.
 
 In reality, Wolfenstain 3D (as well as cub3D) does not have a real 3D world, but rather a 2D map. Using raycasting is able to give the impression of 3D. The basic idea behind raycasting, as the name suggests, is the cast of rays from the position the player is currently in. Several rays are cast in all directions and the engine keeps track of distance it takes until intersection with an obstacle. With said distance it is possible to calculate the height of the walls that will be needed to render the 3D view.
 
-![alt-text](https://github.com/javihernant/cub3d/blob/master/demo.gif)
+![alt-text](https://github.com/javihernant/cub3d/blob/main/demo.gif)
 
 ## Features
 - Config file to modify various settings such as the textures to be used, the map and the initial position of the player.
