@@ -7,7 +7,7 @@ In reality, Wolfenstain 3D (as well as cub3D) does not have a real 3D world, but
 ![alt-text](https://github.com/javihernant/cub3d/blob/main/demo.gif)
 
 ## Features
-- Config file to modify various settings such as the textures to be used, the map and the initial position of the player.
+- Config file to modify various settings such as the textures to be used, the map and the initial position of the player. (WIP)
 - Wall textures
 - Ceiling and floor textures
 - Sprites and animated sprites (WIP)
